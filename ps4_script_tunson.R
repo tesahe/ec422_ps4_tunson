@@ -94,7 +94,7 @@ forecast::dm.test(liquor_errs$arima, liquor_errs$ets, h = 1, power = 2)
 
 forecast::dm.test(liquor_errs$arima, liquor_errs$snaive, h = 1, power = 2)
 
-# For the ARIMA and ETS test, DM = -2.9602 with a p-value of 0.004042.
+# For the ARIMA and ETS test, DM = -2.9062 with a p-value of 0.004042.
 # For the ARIMA and Seasonal Random Walk test, DM = -10.755 with p < 2.2e-16.
 # The liquor chain should use ARIMA, it had the lowest RMSE and MAE. The DM tests show
 # that against ETS the DM statistic is negative so ARIMA has smaller squared errors. 
@@ -229,7 +229,7 @@ var_results |> knitr::kable(digits = 3)
 
 # Against VAR(1), BVAR(4) wins for 3 out of 8 variables, so it's mixed. 
 # With lambda = 0.05, the forecasts get worse for 7 out of 8 variables. 
-# Lambda is too high causing too much shrinkage, the prior shrinks every coefficient too low.
+# Lambda is too low causing too much shrinkage, the prior shrinks every coefficient too low.
 # This model is underfitting. 
 
 
