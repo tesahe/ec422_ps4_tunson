@@ -180,6 +180,60 @@ rmse_by_var(fc_var4)
 # forecast model forecasts better because it has many less coefficients.  
 # The VAR(4) adds a lot of estimation noise and causes overfitting.
 
+# 4.3
+bvar_cv <- function(lambda) {
+  pr <- bv_priors(hyper = "lambda",
+                  mn = bv_mn(lambda = bv_lambda(mode = lambda, sd = 0.4,
+                                                min = 0.999 * lambda,
+                                                max = 1.001 * lambda),
+                             b = 0))
+  fc <- NULL
+  for (T in origins) {
+    fit_T <- bvar(y[1:T, ], lags = 4, priors = pr,
+                  n_draw = 2000, n_burn = 1000, verbose = FALSE)
+    x <- c(1, t(y[T:(T - 3), ]))         # constant and 4 lags of each variable
+    fc <- rbind(fc, x %*% coef(fit_T))   # forecast of y_{T+1}
+  }
+  fc
+}
+
+#set.seed(422)
+#fc_bvar_03 <- bvar_cv(0.3)
+#saveRDS(fc_bvar_03, "results/fc_bvar_03.rds")
+fc_bvar_03 <- readRDS("results/fc_bvar_03.rds")
+
+
+
+#set.seed(422)
+#fc_bvar_005 <- bvar_cv(0.05)
+
+#saveRDS(fc_bvar_005, "results/fc_bvar_005.rds")
+fc_bvar_005 <- readRDS("results/fc_bvar_005.rds")
+
+
+var_results <- tibble(
+  Variable = colnames(y),
+  `VAR(1)` = rmse_by_var(fc_var1),
+  `VAR(4)` = rmse_by_var(fc_var4),
+  `BVAR(4), lambda = 0.3` = rmse_by_var(fc_bvar_03),
+  `BVAR(4), lambda = 0.05` = rmse_by_var(fc_bvar_005)
+)
+
+saveRDS(var_results, "results/var_results.rds")
+
+var_results |> knitr::kable(digits = 3)
+
+# The BVAR(4) wins for all 8 variables against OLS VAR(4)
+# The difference is explained by shrinkage since OLS a large amount of coefficients, 64,
+# that fit a lot of noise.
+
+# Against VAR(1), BVAR(4) wins for 3 out of 8 variables, so it's mixed. 
+# With lambda = 0.05, the forecasts get worse for 7 out of 8 variables. 
+# Lambda is too high causing too much shrinkage, the prior shrinks every coefficient too low.
+# This model is underfitting.
+
+
+
 
 
 
