@@ -287,6 +287,37 @@ tcode[c("INDPRO", "PAYEMS", "CPIAUCSL", "FEDFUNDS")]
 # and FEDFUNDS is is the change in percentage points, its first difference.
 # FEDFUNDS is different because it's already a percentage.
 
+#5.2
+Z <- fm |> select(-date) |> as.matrix()
+
+pc <- prcomp(scale(Z))
+
+summary(pc)$importance[, 1:5]
+
+# The first three factors explain about 29.5 percent of the variation.
+
+#5.2b
+F1 <- pc$x[, 1] * sign(cor(pc$x[, 1], fm$INDPRO))
+
+tibble(date = fm$date, F1 = F1) |>
+  ggplot(aes(date, F1)) +
+  geom_line() +
+  labs(title = "First Factor from FRED-MD", x = NULL, y = NULL) +
+  theme_minimal()
+
+#5.2c
+sort(abs(cor(pc$x[, 1], Z))[1, ], decreasing = TRUE)[1:8]
+
+sort(abs(cor(pc$x[, 2], Z))[1, ], decreasing = TRUE)[1:8]
+
+# Factor 1 is business cycles. It's top series are employment, industrial production,
+# and capacity utilization.
+# Factor 2 is price / inflation. Its top series are CPI price measures. 
+
+
+
+
+
 
 
 
