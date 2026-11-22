@@ -230,11 +230,19 @@ var_results |> knitr::kable(digits = 3)
 # Against VAR(1), BVAR(4) wins for 3 out of 8 variables, so it's mixed. 
 # With lambda = 0.05, the forecasts get worse for 7 out of 8 variables. 
 # Lambda is too high causing too much shrinkage, the prior shrinks every coefficient too low.
-# This model is underfitting.
+# This model is underfitting. 
 
 
+# 4.3c
+e_var4 <- actual[, "gdp"] - fc_var4[, 1]
+e_bvar <- actual[, "gdp"] - fc_bvar_03[, 1]
 
+forecast::dm.test(e_var4, e_bvar, h = 1, power = 2)
 
+# Consumption growth
+e_var4_cons <- actual[, "cons"] - fc_var4[, 2]
+e_bvar_cons <- actual[, "cons"] - fc_bvar_03[, 2]
+forecast::dm.test(e_var4_cons, e_bvar_cons, h = 1, power = 2)
 
 
 
