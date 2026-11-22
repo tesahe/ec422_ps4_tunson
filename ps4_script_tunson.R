@@ -244,6 +244,20 @@ e_var4_cons <- actual[, "cons"] - fc_var4[, 2]
 e_bvar_cons <- actual[, "cons"] - fc_bvar_03[, 2]
 forecast::dm.test(e_var4_cons, e_bvar_cons, h = 1, power = 2)
 
+# For GDP, DM = 2.1366, p = 0.03468
+# For Consumption, DM = 3.0264, p = 0.003034.
+# DM for GDP is positive, so VAR(4) has larger squared errors. Therefore, we reject
+# the null of equal accuracy at 5%. BVAR is better for GDP.
+# For consumption DM is also positive, VAR(4) has larger squared errors as well. We reject
+# the null at 1%. 
+# Although BVAR beat VAR(4), it is only statistically significant for about half of them.
+# This can easily be noise and there are many close values that definitely aren't significant.
+
+
+
+
+
+
 
 
 
