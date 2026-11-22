@@ -101,12 +101,24 @@ forecast::dm.test(liquor_errs$arima, liquor_errs$snaive, h = 1, power = 2)
 # the p-value allows us to reject the null of equal accuracy at the 1% level.
 # With DM = -10.755 and a p-value close to 0 against SRW, ARIMA is also far more accurate.
 
+# Part 3
 
+liquor_combo_fc <- liquor_cv_fit |>
+  mutate(combo = (arima + ets) / 2) |>
+  forecast(h = 1)
 
+liquor_combo_fc |>
+  accuracy(liquor, measures = list(RMSE = RMSE, MAE = MAE))
+# |> knitr::kable(digits = 2) qmd
 
+# combo beats ets in both RMSE and MAE. However, ARIMA is still slightly more
+# accurate in both errors.
 
+#3b
 
+cor(liquor_errs$arima, liquor_errs$ets)
 
+# Correlation = 0.8782934
 
 
 
