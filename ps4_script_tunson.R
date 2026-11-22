@@ -254,10 +254,38 @@ forecast::dm.test(e_var4_cons, e_bvar_cons, h = 1, power = 2)
 # This can easily be noise and there are many close values that definitely aren't significant.
 
 
+# Part 5
+md_raw <- read_csv("data/fredmd_2026-09.csv", show_col_types = FALSE)
+tcode <- unlist(md_raw[1, -1])
+md <- md_raw[-1, ] |> mutate(date = as.Date(sasdate, "%m/%d/%Y"))
 
+transform_series <- function(x, code) {
+  d <- function(v) c(NA, diff(v))
+  switch(as.character(code),
+         "1" = x,                      # level
+         "2" = d(x),                   # first difference
+         "3" = d(d(x)),                # second difference
+         "4" = log(x),                 # log
+         "5" = 100 * d(log(x)),        # growth rate
+         "6" = 100 * d(d(log(x))),     # change in the growth rate
+         "7" = d(x / dplyr::lag(x) - 1))
+}
 
+fm <- map2_dfc(md[names(tcode)], tcode, transform_series) |>
+  mutate(date = md$date, .before = 1) |>
+  filter(date >= as.Date("1960-03-01"), date <= as.Date("2019-12-01"))
 
+fm <- fm[, colSums(is.na(fm)) == 0]
 
+dim(fm)
+
+# 718 122
+
+tcode[c("INDPRO", "PAYEMS", "CPIAUCSL", "FEDFUNDS")]
+
+# INDPRO and PAYEMS are in their monthly growth rates. CPIAUCSL is in change in monthly inflation,
+# and FEDFUNDS is is the change in percentage points, its first difference.
+# FEDFUNDS is different because it's already a percentage.
 
 
 
